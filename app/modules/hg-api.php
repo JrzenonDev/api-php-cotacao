@@ -14,7 +14,7 @@
 
         // function genérica para pegar a url e retornar o json
         function request ( $endpoint = '', $params = array() ) {
-            $uri = "https://api.hgbrasil.com/" . $endpoint. "?key=" . $this->key . "&format=debug";
+            $uri = "https://api.hgbrasil.com/" . $endpoint. "?key=" . $this->key . "&format=json";
 
             // Verifica se é array
             // faz varredura e concatena a url com os valores do array
@@ -31,8 +31,27 @@
                 // diretiva @ ignora erro (ex: sem conexão com a internet, timeout)
                 $response = @file_get_contents($uri);
 
+                //var_dump($response);
+
                 $this->error = false;
-                return true;
+
+                return json_decode($response, true);
+            } else {
+                $this->error = true;
+                return false;
+            }
+        }
+
+        function is_error () {
+            return $this->error;
+        }
+
+        function dolar_quotation () {
+            $data = $this->request('finance/quotations');
+
+            if (!empty($data) && is_array($data['results']['currencies']['USD'])) {
+                $this->error = false;
+                return $data['results']['currencies']['USD'];
             } else {
                 $this->error = true;
                 return false;
