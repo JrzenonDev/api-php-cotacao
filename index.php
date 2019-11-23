@@ -6,7 +6,9 @@
   $hg = new HG_API(HG_API_KEY);
   $dolar = $hg->dolar_quotation();
 
-  var_dump($dolar);
+  if ($hg->is_error() == false) {
+    $variation = ( $dolar['variation'] < 0 ) ? 'danger' : 'info';
+  }
 ?>
 
 <!doctype html>
@@ -26,7 +28,16 @@
         <div class="row">
             <div class="col-12">
                 <p>Cotação Dólar</p>
-                <p>USD <span class="badge badge-pill badge-primary">XXXX</span></p>
+
+                <?php if ($hg->is_error() == false): ?>
+
+                  <p>USD <span class="badge badge-pill badge-<?php echo $variation; ?>"><?php echo $dolar['buy']; ?></span></p>
+
+                <?php else: ?>
+
+                  <p>USD <span class="badge badge-pill badge-danger">Serviços indisponível</span></p>
+
+                <?php endif; ?>
             </div>
         </div>
     </div>
